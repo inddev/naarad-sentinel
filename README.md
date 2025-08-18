@@ -1,1 +1,1 @@
-# naarad-sentinel
+# Naarad Sentinel

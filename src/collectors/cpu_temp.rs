@@ -1,0 +1,1 @@
+// CPU temperature collector
