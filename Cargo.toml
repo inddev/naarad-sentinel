@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 tokio = { version = "1", features = ["full"] }
 hyper = { version = "0.14", features = ["full"] }
-hyper-tls = "0.5"
+hyper-rustls = { version = "0.24", features = ["webpki-roots"] }
 sysinfo = "0.30"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
