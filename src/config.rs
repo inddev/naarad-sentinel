@@ -11,6 +11,11 @@ pub struct Config {
     pub device_name: String,
     pub endpoint: String,
     pub interval: u64,
+    
+    // New options
+    pub prometheus_enabled: bool,
+    pub prometheus_port: u16,
+    pub push_enabled: bool,
 }
 
 impl Default for Config {
@@ -21,6 +26,9 @@ impl Default for Config {
             device_name: String::new(),
             endpoint: "https://app.naarad.dev/api/devices/metrics/ingest".to_string(),
             interval: 60, // 60 seconds default
+            prometheus_enabled: true,
+            prometheus_port: 9101,
+            push_enabled: true,
         }
     }
 }
@@ -110,6 +118,9 @@ pub fn interactive_setup(api_key: String) -> Result<Config, Box<dyn std::error::
             "https://app.naarad.dev/api/devices/metrics/ingest".to_string()
         },
         interval: 60,
+        prometheus_enabled: true,
+        prometheus_port: 9101,
+        push_enabled: true,
     };
     
     save_config(&config)?;
