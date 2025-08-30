@@ -83,31 +83,35 @@ pub fn get_device_info() -> DeviceInfo {
 #[cfg(target_os = "windows")]
 pub fn get_device_info() -> DeviceInfo {
     use std::process::Command;
-    use uname::uname;
+    use std::env;
 
     let os_type = "Windows".to_string();
 
-    // Windows build/version via `ver` command
+    // Windows version info
     let os_version = Command::new("cmd")
         .args(["/C", "ver"])
         .output()
         .ok()
         .and_then(|o| String::from_utf8(o.stdout).ok())
-        .unwrap_or_else(|| "Unknown".to_string())
-        .trim()
-        .to_string();
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|| "Windows Unknown".to_string());
 
-    let kernel_version = uname()
-        .map(|u| u.release)
+    // Architecture from environment
+    let architecture = env::var("PROCESSOR_ARCHITECTURE")
         .unwrap_or_else(|_| "Unknown".to_string());
 
-    let architecture = uname()
-        .map(|u| u.machine)
+    // Hostname from environment
+    let hostname = env::var("COMPUTERNAME")
         .unwrap_or_else(|_| "Unknown".to_string());
 
-    let hostname = uname()
-        .map(|u| u.nodename)
-        .unwrap_or_else(|_| "Unknown".to_string());
+    // Kernel version - use Windows build number
+    let kernel_version = Command::new("cmd")
+        .args(["/C", "echo %OS%"])
+        .output()
+        .ok()
+        .and_then(|o| String::from_utf8(o.stdout).ok())
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|| "Windows".to_string());
 
     DeviceInfo { os_type, os_version, kernel_version, architecture, hostname }
 }

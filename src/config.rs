@@ -67,13 +67,22 @@ pub fn load_config() -> Result<Config, Box<dyn std::error::Error>> {
 }
 
 pub fn generate_device_name() -> String {
-    let hostname = uname::uname()
-        .map(|info| info.nodename)
-        .unwrap_or_else(|_| "unknown-device".to_string());
-    
+    let hostname = get_hostname();
     let os_type = std::env::consts::OS;
-    
     format!("{}-{}", os_type, hostname)
+}
+
+#[cfg(unix)]
+fn get_hostname() -> String {
+    uname::uname()
+        .map(|info| info.nodename)
+        .unwrap_or_else(|_| "unknown-device".to_string())
+}
+
+#[cfg(windows)]
+fn get_hostname() -> String {
+    std::env::var("COMPUTERNAME")
+        .unwrap_or_else(|_| "unknown-device".to_string())
 }
 
 pub fn interactive_setup(api_key: String) -> Result<Config, Box<dyn std::error::Error>> {

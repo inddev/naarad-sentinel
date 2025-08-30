@@ -1,190 +1,118 @@
 # Naarad Sentinel
 
-**Naarad Sentinel** is a lightweight system metrics exporter written in Rust. It runs on Linux, macOS, and Windows — with special support for Raspberry Pi — and exposes system data in **Prometheus format** on `:9101/metrics`.
+**Naarad Sentinel** is a lightweight system monitoring agent that connects your devices to the **Naarad Dashboard** for unified infrastructure monitoring alongside domain management and WordPress oversight.
+
+> 📖 **[Read the Complete Setup & User Guide →](./GUIDE.md)**
 
 ---
 
-## 🚀 Features
+## 🚀 Quick Start
 
-* CPU temperature (Linux / Raspberry Pi)
-* Disk free space (Linux, macOS, Windows)
-* Device info (OS type, version, kernel, architecture, hostname)
-* Tiny footprint, async HTTP server
-* Prometheus-compatible text exposition
+### 🍓 Raspberry Pi (One Command)
+```bash
+curl -sSL https://raw.githubusercontent.com/inddev/naarad-sentinel/main/install-pi.sh | bash
+```
+
+### 🐧 Linux / 🍎 macOS / 🪟 Windows
+1. **Download** for your platform from [Releases](https://github.com/inddev/naarad-sentinel/releases/latest)
+2. **Get API key** from [Naarad Dashboard](https://app.naarad.dev) → Settings → API Keys
+3. **Setup**: `./naarad-sentinel --setup --api-key=YOUR_KEY`
+4. **Start**: `./naarad-sentinel`
 
 ---
 
-## 📦 Getting Started
+## ✨ Features
 
-### 1) Run locally (macOS/Linux/Windows)
-
-```bash
-# Build & run
-cargo build --release
-./target/release/naarad-sentinel
-
-# Test the metrics endpoint
-curl http://localhost:9101/metrics
-```
-
-### 2) Cross-compile for Raspberry Pi (armv7)
-
-```bash
-# (Recommended) zig-based cross build
-cargo install cargo-zigbuild
-rustup target add armv7-unknown-linux-gnueabihf
-cargo zigbuild --release --target armv7-unknown-linux-gnueabihf
-
-# Copy to Pi
-scp target/armv7-unknown-linux-gnueabihf/release/naarad-sentinel \
-    <user>@<pi-host>:/home/<user>/
-
-# Run on the Pi
-ssh <user>@<pi-host> "./naarad-sentinel"
-# Then from your machine:
-curl http://<pi-host>:9101/metrics
-```
-
-> Tip: Replace `<user>` and `<pi-host>` with your actual SSH username/host (e.g., `pi@pi.local`).
+- 🔥 **CPU Temperature** (Linux/Raspberry Pi)
+- 💾 **Disk Space Monitoring** (All platforms)  
+- 🖥️ **System Information** (OS, kernel, architecture)
+- 📊 **Prometheus Metrics** (`:9101/metrics`)
+- 🚀 **Multi-platform** (Linux x64/ARM64, macOS Intel/ARM, Windows, Raspberry Pi)
+- ⚡ **Lightweight** (4MB binary, minimal resources)
+- 🔄 **Auto-sync** with Naarad dashboard
 
 ---
 
-## 🔁 Optional: Run as a systemd service (Pi/Linux)
+## 🎛️ Dashboard Integration
 
-```bash
-# Copy the binary to a standard location
-sudo mv ~/naarad-sentinel /usr/local/bin/naarad-sentinel
-sudo chmod +x /usr/local/bin/naarad-sentinel
-
-# Create the service
-sudo tee /etc/systemd/system/naarad-sentinel.service >/dev/null <<'EOF'
-[Unit]
-Description=Naarad Sentinel
-After=network.target
-
-[Service]
-User=<user>
-ExecStart=/usr/local/bin/naarad-sentinel
-Restart=always
-RestartSec=3
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Enable & start
-sudo systemctl daemon-reload
-sudo systemctl enable naarad-sentinel
-sudo systemctl start naarad-sentinel
-sudo systemctl status naarad-sentinel --no-pager
-```
+Once connected, your [Naarad Dashboard](https://app.naarad.dev) shows:
+- 📱 **All devices** in unified view
+- 📈 **Real-time metrics** and historical trends
+- 🚨 **Smart alerts** for disk space, temperature, offline devices
+- 🔧 **Device management** and configuration
 
 ---
 
 ## 📊 Example Output
 
-```text
-device_cpu_temperature_celsius 44.388
-device_disk_free_mb 26449
-sentinel_device_info{os_type="Linux", os_version="Raspbian GNU/Linux 12 (bookworm)", kernel="6.12.34+rpt-rpi-v7", arch="armv7l", hostname="p2"} 1
-```
-
----
-
-## 📈 Prometheus integration
-
-```yaml
-scrape_configs:
-  - job_name: 'naarad_sentinel'
-    static_configs:
-      - targets:
-          - 'p2.local:9101'   # your Raspberry Pi
-          # - 'another-host:9101'
-```
-
----
-
-## 🛠 Development Guide
-
-### Requirements
-
-* Rust (stable), Cargo, Git
-* (Optional) `cargo-zigbuild` for cross-compiling to Pi from macOS
-* Linux-only metrics (e.g. CPU temperature) gracefully omit on non-Linux hosts
-
-### Repo layout
-
-```text
-src/
-  collectors/
-    cpu_temp.rs      # CPU temperature (Linux/Pi)
-    disk_free.rs     # Per-OS disk free handling (Linux/macOS/Windows)
-    device_info.rs   # Friendly OS name/version, kernel, arch, hostname
-    mod.rs
-  main.rs            # HTTP server + /metrics assembly
-```
-
-### Workflow
-
 ```bash
-# 1) Fork & clone
-git clone git@github.com:<you>/naarad-sentinel.git
-cd naarad-sentinel
-
-# 2) Create a feature branch
-git checkout -b feature/<short-name>
-
-# 3) Run locally
-cargo run
-
-# 4) Test the endpoint
 curl http://localhost:9101/metrics
+```
 
-# 5) Commit & push
-git add .
-git commit -m "feat: <what you changed>"
-git push origin feature/<short-name>
-
-# 6) Open a PR on GitHub
+```
+device_cpu_temperature_celsius 42.5
+device_disk_free_mb 15420
+sentinel_device_info{os_type=\"Linux\", os_version=\"Raspberry Pi OS\", hostname=\"pi4\"} 1
 ```
 
 ---
 
-## 🧭 OS Notes
+## 🛠️ Development
 
-* **CPU temperature**: reported on Linux/Pi via `/sys/class/thermal/thermal_zone0/temp`. Not shown on macOS/Windows.
-* **Disk free**:
+### Build from Source
+```bash
+git clone https://github.com/inddev/naarad-sentinel.git
+cd naarad-sentinel
+cargo build --release
+```
 
-  * Linux: via `statvfs()` (actual free).
-  * macOS: via `df -m /` to avoid APFS “purgeable” illusions.
-  * Windows: via `GetDiskFreeSpaceExW`.
-* **Device info**: single metric `sentinel_device_info{...} 1` encodes OS details as labels (Prometheus-style).
+### Cross-Compile All Platforms
+```bash
+# Local build script
+./build-all.sh
+
+# Docker-based (recommended)
+./docker-build.sh
+```
 
 ---
 
-## 🗺 Roadmap
+## 📁 Project Structure
 
-* systemd unit in-repo (packaged)
-* Memory usage & CPU usage collectors
-* Network interface stats
-* Grafana dashboard templates
-* Docker image
-* Configurable collectors & port (env/flags)
+```
+src/
+├── collectors/          # Metric collection (CPU, disk, system info)
+├── config.rs           # Configuration management  
+├── http_client.rs      # Naarad API communication
+├── metrics.rs          # Prometheus formatting
+└── main.rs             # CLI interface
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! Guidelines:
-
-* Place new metrics under `src/collectors/`.
-* Use Prometheus naming conventions (unit suffixes like `_celsius`, `_bytes`, `_seconds`).
-* Prefer label-encoded info metrics (e.g., `*_info{...} 1`) over string values.
-* Handle OS differences with `#[cfg(target_os = "...")]` so outputs stay correct.
-* Include an example of your metric in the PR description.
+1. 🍴 **Fork** the repository
+2. 🌿 **Create** feature branch
+3. 📊 **Add** new metrics in `src/collectors/`
+4. ✅ **Test** on target platforms
+5. 📤 **Submit** pull request
 
 ---
 
 ## 📜 License
 
-MIT — see `LICENSE` for details.
+MIT License - see [LICENSE](LICENSE) for details.
+
+---
+
+## 🔗 Links
+
+- 🌐 **[Naarad Dashboard](https://app.naarad.dev)** - Main application
+- 📖 **[Complete Guide](./GUIDE.md)** - Detailed setup & usage
+- 🐛 **[Issues](https://github.com/inddev/naarad-sentinel/issues)** - Bug reports & feature requests
+- 📦 **[Releases](https://github.com/inddev/naarad-sentinel/releases)** - Download binaries
+
+---
+
+*Part of the **Naarad Ecosystem** - Unified monitoring for your digital infrastructure.*
