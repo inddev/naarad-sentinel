@@ -33,7 +33,7 @@ pub fn get_disk_free_mb() -> Option<u64> {
     use windows::Win32::Storage::FileSystem::GetDiskFreeSpaceExW;
     use windows::core::PCWSTR;
 
-    let drive: Vec<u16> = "C:\\\0".encode_utf16().collect(); // keep Vec alive
+    let drive: Vec<u16> = "C:\\\0".encode_utf16().collect();
     let mut free_bytes_available: u64 = 0;
     let mut total_number_of_bytes: u64 = 0;
     let mut total_number_of_free_bytes: u64 = 0;
@@ -41,9 +41,9 @@ pub fn get_disk_free_mb() -> Option<u64> {
     unsafe {
         if GetDiskFreeSpaceExW(
             PCWSTR::from_raw(drive.as_ptr()),
-            &mut free_bytes_available,
-            &mut total_number_of_bytes,
-            &mut total_number_of_free_bytes,
+            Some(&mut free_bytes_available),
+            Some(&mut total_number_of_bytes),
+            Some(&mut total_number_of_free_bytes),
         )
         .is_ok()
         {

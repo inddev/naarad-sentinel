@@ -13,6 +13,50 @@
 
 ---
 
+## 🛠️ Available Scripts
+
+### For End Users
+
+#### Raspberry Pi Quick Install
+```bash
+# Basic installation
+curl -sSL https://raw.githubusercontent.com/inddev/naarad-sentinel/main/install-pi.sh | bash
+
+# With API key (completes setup automatically)
+curl -sSL https://raw.githubusercontent.com/inddev/naarad-sentinel/main/install-pi.sh | bash -s YOUR_API_KEY
+```
+**What it does**: Detects Pi architecture, downloads correct binary, optionally configures with API key
+
+#### Install as System Service (Linux/Pi)
+```bash
+# After binary is installed and configured
+sudo ./install-service.sh
+```
+**What it does**: Installs Sentinel as systemd service for 24/7 monitoring
+
+### For Developers
+
+#### Test Before Committing
+```bash
+./final-test.sh
+```
+**What it does**: Comprehensive pre-commit testing (syntax, build, functionality)
+
+#### Cross-Platform Building
+```bash
+# Docker-based (recommended)
+./docker-build.sh
+
+# Local (requires toolchains)
+./build-all.sh
+
+# Quick Docker test
+./docker-test.sh
+```
+**What they do**: Build binaries for all supported platforms
+
+---
+
 ## 🤖 What is Naarad Sentinel?
 
 **Naarad Sentinel** is a lightweight system monitoring agent that collects device metrics and sends them to your Naarad dashboard. It runs on your servers, Raspberry Pi devices, and local machines to provide real-time infrastructure monitoring.

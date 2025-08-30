@@ -2,7 +2,20 @@
 
 **Naarad Sentinel** is a lightweight system monitoring agent that connects your devices to the **Naarad Dashboard** for unified infrastructure monitoring alongside domain management and WordPress oversight.
 
-> 📖 **[Read the Complete Setup & User Guide →](./GUIDE.md)**
+> 📖 **[Complete Setup & User Guide →](./USER-GUIDE.md)**
+
+---
+
+## 🛠️ Scripts
+
+| Script | Purpose | Usage |
+|--------|---------|-------|
+| `install-pi.sh` | One-command Pi setup | `curl ... \| bash` |
+| `install-service.sh` | Install as service | `sudo ./install-service.sh` |
+| `docker-build.sh` | Cross-compile all platforms | `./docker-build.sh` |
+| `final-test.sh` | Pre-commit testing | `./final-test.sh` |
+
+> 📝 **[Complete Scripts Reference →](./docs/SCRIPTS-REFERENCE.md)**
 
 ---
 
@@ -109,8 +122,10 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## 🔗 Links
 
 - 🌐 **[Naarad Dashboard](https://app.naarad.dev)** - Main application
-- 📖 **[Complete Guide](./GUIDE.md)** - Detailed setup & usage
-- 🐛 **[Issues](https://github.com/inddev/naarad-sentinel/issues)** - Bug reports & feature requests
+- 📖 **[User Guide](./USER-GUIDE.md)** - Complete setup & usage
+- 👨‍💻 **[Developer Guide](./DEVELOPER-GUIDE.md)** - Internal operations
+- 📝 **[Scripts Reference](./docs/SCRIPTS-REFERENCE.md)** - All scripts explained
+- 🐛 **[Issues](https://github.com/inddev/naarad-sentinel/issues)** - Bug reports & features
 - 📦 **[Releases](https://github.com/inddev/naarad-sentinel/releases)** - Download binaries
 
 ---

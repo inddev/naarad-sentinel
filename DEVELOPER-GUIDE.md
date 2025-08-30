@@ -12,6 +12,78 @@
 
 ---
 
+## 🛠️ Scripts Reference
+
+### Build & Development Scripts
+
+#### `final-test.sh` - Pre-commit Testing
+**Purpose**: Comprehensive test before committing changes  
+**Usage**: `./final-test.sh`  
+**What it does**:
+- ✅ Syntax checking (`cargo check`)
+- 🔨 Release build test
+- 🧪 Binary functionality test
+- 📊 Binary size reporting
+- 📋 Next steps guidance
+
+#### `docker-test.sh` - Docker Build Testing
+**Purpose**: Test compilation in clean Docker environment  
+**Usage**: `./docker-test.sh`  
+**What it does**:
+- 🐳 Validates Docker-based compilation
+- 🔍 Quick syntax check in container
+- 🔨 Single platform build test (Linux x64)
+- 📁 Verifies binary creation
+
+#### `docker-build.sh` - Full Cross-Compilation
+**Purpose**: Build binaries for all platforms using Docker  
+**Usage**: `./docker-build.sh`  
+**What it does**:
+- 🐳 Creates temporary Dockerfile with all cross-compilation tools
+- 🎯 Builds for 4 platforms (Linux x64/ARM64, Pi, Windows)
+- 📦 Extracts binaries to `./dist/` folder
+- 🧹 Cleans up temporary container and Dockerfile
+
+#### `build-all.sh` - Local Cross-Compilation
+**Purpose**: Cross-compile locally (requires installed toolchains)  
+**Usage**: `./build-all.sh`  
+**What it does**:
+- 📥 Installs required Rust targets
+- 🔨 Builds for all 6 platforms sequentially
+- 📁 Copies binaries to `./dist/` with proper names
+- 📊 Shows final binary listing
+
+### Installation Scripts
+
+#### `install-pi.sh` - Raspberry Pi Installer
+**Purpose**: One-command installation for Raspberry Pi users  
+**Usage**: 
+```bash
+# Download and run
+curl -sSL https://raw.githubusercontent.com/inddev/naarad-sentinel/main/install-pi.sh | bash
+
+# With API key
+curl -sSL https://raw.githubusercontent.com/inddev/naarad-sentinel/main/install-pi.sh | bash -s YOUR_API_KEY
+```
+**What it does**:
+- 🔍 Auto-detects Pi architecture (armv7l vs aarch64)
+- 📥 Downloads correct binary from GitHub releases
+- ⚙️ Optionally runs setup if API key provided
+- 📋 Shows next steps for manual setup
+
+#### `install-service.sh` - Systemd Service Installer
+**Purpose**: Install Sentinel as background system service  
+**Usage**: `sudo ./install-service.sh`  
+**Requirements**: Must run as root, binary and config must exist  
+**What it does**:
+- 📁 Copies binary to `/usr/local/bin/`
+- ✅ Validates configuration exists
+- 📝 Creates systemd service file
+- 🚀 Enables and starts service
+- 📋 Shows service management commands
+
+---
+
 ## 🏗️ Architecture
 
 ### Technical Stack
