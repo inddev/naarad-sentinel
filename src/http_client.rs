@@ -35,7 +35,7 @@ impl NaaradClient {
         // Create timestamp
         let timestamp = chrono::Utc::now().to_rfc3339();
         
-        // Build the payload matching the API format
+        // Build the payload matching the Naarad API format
         let payload = json!({
             "device_id": self.config.device_id,
             "device_name": self.config.device_name,
@@ -76,7 +76,7 @@ impl NaaradClient {
             let body_bytes = hyper::body::to_bytes(resp.into_body()).await?;
             let body_str = String::from_utf8_lossy(&body_bytes);
             
-            println!("❌ Failed to send metrics: {} - {}", status, body_str);
+            return Err(format!("Failed to send metrics: {} - {}", status, body_str).into());
         }
         
         Ok(())

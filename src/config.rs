@@ -82,7 +82,8 @@ fn get_hostname() -> String {
 #[cfg(windows)]
 fn get_hostname() -> String {
     std::env::var("COMPUTERNAME")
-        .unwrap_or_else(|_| "unknown-device".to_string())
+        .unwrap_or_else(|_| "windows-pc".to_string())
+        .to_lowercase() // Make it consistent
 }
 
 pub fn interactive_setup(api_key: String) -> Result<Config, Box<dyn std::error::Error>> {

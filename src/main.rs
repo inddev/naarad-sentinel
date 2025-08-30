@@ -84,12 +84,32 @@ async fn run_monitoring_loop(config: Config) -> Result<(), Box<dyn std::error::E
     });
     
     let mut interval = time::interval(interval_duration);
+    let mut consecutive_failures = 0;
+    let max_failures = 5;
     
     loop {
         interval.tick().await;
         
-        if let Err(e) = client.send_metrics().await {
-            println!("❌ Error sending metrics: {}", e);
+        match client.send_metrics().await {
+            Ok(_) => {
+                consecutive_failures = 0; // Reset failure counter on success
+            },
+            Err(e) => {
+                consecutive_failures += 1;
+                println!("❌ Error sending metrics (attempt {}): {}", consecutive_failures, e);
+                
+                if consecutive_failures >= max_failures {
+                    println!("⚠️  {} consecutive failures. Will keep retrying but consider checking:", max_failures);
+                    println!("   - Internet connection");
+                    println!("   - API endpoint availability: {}", config.endpoint);
+                    println!("   - API key validity: {}***", &config.api_key[..std::cmp::min(config.api_key.len(), 20)]);
+                    println!("   - Run with --dev flag to use localhost endpoint");
+                    println!();
+                    
+                    // Reset counter to avoid spamming
+                    consecutive_failures = 0;
+                }
+            }
         }
     }
 }
