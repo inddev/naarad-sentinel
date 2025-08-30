@@ -10,6 +10,21 @@
 - **Plan differentiation** - Free plan gets basic monitoring, paid plans get advanced features
 - **Cross-platform** - Works on user's servers, Pi devices, local machines
 
+### GitHub Actions Workflow
+
+#### `release.yml` - Automated Release Pipeline
+**Purpose**: Automatically build and release binaries when tags are pushed  
+**Triggered by**: 
+- Pushing version tags (`git push origin v0.1.0`)
+- Manual workflow dispatch from GitHub UI  
+**What it does**:
+- 🔨 Builds for all 6 platforms in parallel (Linux x64/ARM64, Pi, macOS Intel/ARM, Windows)
+- 📦 Creates GitHub release with auto-generated notes
+- 🚀 Attaches all platform binaries for download
+- 🏷️ Tags release with version number
+
+**Note**: Pushing a tag triggers 2 workflow runs (tag + main branch push) - this is normal GitHub behavior.
+
 ---
 
 ## 🛠️ Scripts Reference

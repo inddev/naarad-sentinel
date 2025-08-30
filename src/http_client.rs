@@ -1,19 +1,23 @@
 // src/http_client.rs
 use hyper::{Body, Client, Method, Request, Uri};
 use hyper::header::{AUTHORIZATION, CONTENT_TYPE};
+use hyper_tls::HttpsConnector;
 use serde_json::json;
 use crate::config::Config;
 use crate::collectors::{cpu_temp, disk_free, device_info};
 
 pub struct NaaradClient {
-    client: Client<hyper::client::HttpConnector>,
+    client: Client<HttpsConnector<hyper::client::HttpConnector>>,
     config: Config,
 }
 
 impl NaaradClient {
     pub fn new(config: Config) -> Self {
+        let https = HttpsConnector::new();
+        let client = Client::builder().build::<_, hyper::Body>(https);
+        
         Self {
-            client: Client::new(),
+            client,
             config,
         }
     }
