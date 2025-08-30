@@ -1,5 +1,9 @@
 name: Release
 
+permissions:
+  contents: write
+  packages: write
+
 on:
   push:
     tags:
@@ -95,14 +99,17 @@ jobs:
       with:
         path: dist
 
-    - name: Display structure of downloaded files
-      run: ls -R dist
+    - name: Flatten artifacts structure
+      run: |
+        mkdir -p release-files
+        find dist -name "naarad-sentinel-*" -type f -exec cp {} release-files/ \;
+        ls -la release-files/
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: dist/*/*
+        files: release-files/*
         generate_release_notes: true
         draft: false
         prerelease: false
